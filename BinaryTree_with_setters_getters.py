@@ -42,10 +42,10 @@ if __name__=="__main__":
     node2=Node(5)
     node3=Node(17)
     node1.setLeft(node2)
-    node1.setRight(node2)
+    node1.setRight(node3)
 
     node4=Node(4)
-    node5=Node(5)
+    node5=Node(6)
     node2.setLeft(node4)
     node2.setRight(node5)
 
@@ -57,8 +57,8 @@ if __name__=="__main__":
 
     node8=Node(18)
     node9=Node(21)
-    node7.setRight(node8)
-    node7.setLeft(node9)
+    node7.setLeft(node8)
+    node7.setRight(node9)
 
     binaryTree=BinaryTree()
     binaryTree.setRoot(node1)
