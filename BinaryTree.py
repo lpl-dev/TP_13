@@ -145,7 +145,7 @@ if __name__=="__main__":
     print(f"17 une valeur de l'arbre ? {binaryTree.belongs(nodes[0],17)}")
     print(f"23 une valeur de l'arbre ? {binaryTree.belongs(nodes[0],23)}")
     print('-'*10)
-    print("Affichage des antécédents de 3 :")
+    print("Affichage des antécédents de 21 :")
     binaryTree.ancestors(nodes[0],21)
     print('-' * 10)
     print("Affichage des descendants de 5 :")
