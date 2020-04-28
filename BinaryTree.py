@@ -4,6 +4,10 @@ class Node:
         self.__left=None
         self.__right=None
 
+    def __str__(self):
+        return str(self.__val)
+
+
     def getVal(self):
         return self.__val
 
@@ -58,7 +62,7 @@ class BinaryTree:
         if node==None:
             return
         self.printValues(node.getLeft())
-        print(node.getVal())
+        print(node)
         self.printValues(node.getRight())
 
     def sumValues(self,node):
@@ -100,7 +104,7 @@ class BinaryTree:
             return True
 
         if self.__ancestors(node.getLeft(),val) or self.__ancestors(node.getRight(),val):
-            print(node.getVal())
+            print(node)
             return True
 
     def descendants(self,node,val):
@@ -118,13 +122,48 @@ class BinaryTree:
         self.descendants(node.getLeft(),val)
         self.descendants(node.getRight(),val)
 
+    def prefixe(self,node):
+        if node == None:
+            return
+        print(node)
+        self.prefixe(node.getLeft())
+        self.prefixe(node.getRight())
+
+    def infixe(self,node):
+        if node == None:
+            return
+        self.infixe(node.getLeft())
+        print(node)
+        self.infixe(node.getRight())
+        # = printValues
+
+    def postfixe(self,node):
+        if node == None:
+            return
+        self.postfixe(node.getLeft())
+        self.postfixe(node.getRight())
+        print(node)
+
+    def widetrack(self,node):
+        self.__widetrack(node,self.size(node))
+
+    def __widetrack(self, node, treesize, floors_list=[], floor_nbr=0):
+        if node==None:
+            if len(floors_list)==treesize:
+                floors_list_sorted=sorted(floors_list,key=lambda f:f['floor_nbr'])
+                for floor in floors_list_sorted:
+                    print(floor['value'])
+            return
+        self.__widetrack(node.getLeft(), treesize, floors_list, floor_nbr + 1)
+        floors_list.append({'value':node.getVal(),'floor_nbr':floor_nbr})
+        self.__widetrack(node.getRight(), treesize, floors_list, floor_nbr + 1)
+
 
 if __name__=="__main__":
     values=[12,5,4,3,6,17,19,18,21]
     nodes=[]
     for value in values:
         nodes.append(Node(value))
-
     binaryTree=BinaryTree()
 
     for node in nodes:
@@ -150,3 +189,15 @@ if __name__=="__main__":
     print('-' * 10)
     print("Affichage des descendants de 5 :")
     binaryTree.descendants(nodes[0],5)
+    print('-' * 10)
+    print("Affichage suivant un parcours prefixe :")
+    binaryTree.prefixe(nodes[0])
+    print('-' * 10)
+    print("Affichage suivant un parcours infixe :")
+    binaryTree.infixe(nodes[0])
+    print('-' * 10)
+    print("Affichage suivant un parcours postfixe :")
+    binaryTree.postfixe(nodes[0])
+    print('-' * 10)
+    print("Affichage suivant un parcours largeur :")
+    binaryTree.widetrack(nodes[0])
