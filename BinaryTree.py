@@ -26,13 +26,13 @@ class Node:
 
 class BinaryTree:
     def __init__(self):
-        self.__root=None
+        self._root=None
 
     def insert(self,node):
-        if self.__root==None:
-            self.__root=node
+        if self._root==None:
+            self._root=node
         else:
-            self.__insert(node,self.__root)
+            self.__insert(node, self._root)
 
     def __insert(self,node,c_node):
         if node.getVal()<c_node.getVal():
@@ -51,7 +51,7 @@ class BinaryTree:
             return
 
     def isRoot(self, node):
-        return self.__root == node
+        return self._root == node
 
     def size(self,node):
         if node==None:
@@ -158,8 +158,45 @@ class BinaryTree:
         floors_list.append({'value':node.getVal(),'floor_nbr':floor_nbr})
         self.__widetrack(node.getRight(), treesize, floors_list, floor_nbr + 1)
 
+class BinarySearchTree(BinaryTree):
+    def __init__(self):
+        super().__init__()
+
+    def contains(self,node,val):
+        return self.belongs(node,val)
+
+    def findMin(self,node):
+        if node.getLeft()==None:
+            return node.getVal()
+        return self.findMin(node.getLeft())
+
+    def findMax(self, node):
+        if node.getRight() == None:
+            return node.getVal()
+        return self.findMax(node.getRight())
+
+    def equivalentBST(self,node1,node2):
+        return self.getTreeValues(node1)==self.getTreeValues(node2)
+
+    def getTreeValues(self,node):
+        return self.__getTreeValues(node,self.size(node),[])
+
+    def __getTreeValues(self,node,treesize,values):
+        if node == None:
+            if len(values) == treesize:
+                return values
+            return
+        values.append(node.getVal())
+        self.__getTreeValues(node.getLeft(), treesize, values)
+        return self.__getTreeValues(node.getRight(), treesize, values)
+
 
 if __name__=="__main__":
+    print("""
+    -----------
+    Binary Tree
+    -----------\n\n
+    """)
     values=[12,5,4,3,6,17,19,18,21]
     nodes=[]
     for value in values:
@@ -201,3 +238,34 @@ if __name__=="__main__":
     print('-' * 10)
     print("Affichage suivant un parcours largeur :")
     binaryTree.widetrack(nodes[0])
+
+    print("""\n\n
+    ------------------
+    Binary Search Tree
+    ------------------\n\n
+    """)
+    values=[4,2,0,1,3,20,12,7,6,15,13,14]
+    nodes_s=[]
+    for value in values:
+        nodes_s.append(Node(value))
+    binarySearchTree=BinarySearchTree()
+
+    for node in nodes_s:
+        binarySearchTree.insert(node)
+
+    print("Affichage suivant un parcours infixe :")
+    binarySearchTree.infixe(nodes_s[0])
+
+    print('-' * 10)
+    print(f"12 une valeur de l'arbre ? {binarySearchTree.contains(nodes_s[0], 12)}")
+    print(f"4 une valeur de l'arbre ? {binarySearchTree.contains(nodes_s[0], 4)}")
+    print(f"17 une valeur de l'arbre ? {binarySearchTree.contains(nodes_s[0], 17)}")
+    print(f"23 une valeur de l'arbre ? {binarySearchTree.contains(nodes_s[0], 23)}")
+
+    print('-' * 10)
+    print(f"Valeur minimale de l'arbre ? {binarySearchTree.findMin(nodes_s[0])}")
+    print(f"Valeur maximale de l'arbre ? {binarySearchTree.findMax(nodes_s[0])}")
+
+    print('-' * 10)
+    print(f"Arbres équivalents ? {binarySearchTree.equivalentBST(nodes_s[0],nodes_s[0])}")
+    print(f"Arbres équivalents ? {binarySearchTree.equivalentBST(nodes_s[1], nodes_s[2])}")
