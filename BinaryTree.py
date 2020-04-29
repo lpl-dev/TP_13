@@ -28,6 +28,9 @@ class BinaryTree:
     def __init__(self):
         self._root=None
 
+    def getRoot(self):
+        return self._root
+
     def insert(self,node):
         if self._root==None:
             self._root=node
@@ -145,14 +148,18 @@ class BinaryTree:
         print(node)
 
     def widetrack(self,node):
-        self.__widetrack(node,self.size(node))
+        self.__widetrack(node,self.size(node),[],0)
 
     def __widetrack(self, node, treesize, floors_list=[], floor_nbr=0):
         if node==None:
             if len(floors_list)==treesize:
                 floors_list_sorted=sorted(floors_list,key=lambda f:f['floor_nbr'])
-                for floor in floors_list_sorted:
-                    print(floor['value'])
+                treesize=len(floors_list_sorted)
+                for i in range(treesize):
+                    if i<treesize-1 and  floors_list_sorted[i]['floor_nbr']==floors_list_sorted[i+1]['floor_nbr']:
+                        print(floors_list_sorted[i]['value'],end=' ')
+                    else:
+                        print(floors_list_sorted[i]['value'])
             return
         self.__widetrack(node.getLeft(), treesize, floors_list, floor_nbr + 1)
         floors_list.append({'value':node.getVal(),'floor_nbr':floor_nbr})
@@ -167,12 +174,12 @@ class BinarySearchTree(BinaryTree):
 
     def findMin(self,node):
         if node.getLeft()==None:
-            return node.getVal()
+            return node
         return self.findMin(node.getLeft())
 
     def findMax(self, node):
         if node.getRight() == None:
-            return node.getVal()
+            return node
         return self.findMax(node.getRight())
 
     def equivalentBST(self,node1,node2):
@@ -181,7 +188,7 @@ class BinarySearchTree(BinaryTree):
     def getTreeValues(self,node):
         return self.__getTreeValues(node,self.size(node),[])
 
-    def __getTreeValues(self,node,treesize,values):
+    def __getTreeValues(self,node,treesize,values=[]):
         if node == None:
             if len(values) == treesize:
                 return values
@@ -190,6 +197,72 @@ class BinarySearchTree(BinaryTree):
         self.__getTreeValues(node.getLeft(), treesize, values)
         return self.__getTreeValues(node.getRight(), treesize, values)
 
+    def delete(self,node,val):
+        parent=self.getParentOfNodeValue(node,val)
+        if parent != None:
+            left=parent.getLeft()
+            right=parent.getRight()
+            node_v=left if (left!=None and left.getVal()==val) else right
+            if node_v.getLeft()==None and node_v.getRight()==None:
+                # noeud avec val = feuille
+                new_child=None
+            elif node_v.getLeft()==None or node_v.getRight()==None:
+                left_c = node_v.getLeft()
+                right_c= node_v.getRight()
+                child=left_c if left_c!=None else right_c
+            else:
+                new_child=self.findMax(node_v.getLeft())
+
+                new_child.setLeft(node_v.getLeft())
+                new_child.setRight(node_v.getRight())
+
+                new_child_parent=self.getParentOfNodeValue(node,new_child.getVal())
+                if new_child_parent.getLeft()==new_child:
+                    new_child_parent.setLeft(None)
+                else:
+                    new_child_parent.setRight(None)
+            if parent.getLeft() == node_v:
+                parent.setLeft(new_child)
+            else:
+                parent.setRight(new_child)
+        else:
+            # noeud avec val = root
+            self._root = self.findMax(node.getLeft())
+
+            self._root.setLeft(node.getLeft())
+            self._root.setRight(node.getRight())
+
+            new_root_previous_parent = self.getParentOfNodeValue(node, self._root.getVal())
+            if new_root_previous_parent.getLeft() == self._root:
+                new_root_previous_parent.setLeft(None)
+            else:
+                new_root_previous_parent.setRight(None)
+
+    def getParentOfNodeValue(self,node,val):
+        ancestors=self.__getParentOfNodeValue(node,val,[])
+        return None if node.getVal()==val else ancestors[0]
+
+    def __getParentOfNodeValue(self,node,val,ancestors=[]):
+        if node == None:
+            return False
+        if node.getVal() == val:
+            return True
+        if self.__getParentOfNodeValue(node.getLeft(),val,ancestors) or self.__getParentOfNodeValue(node.getRight(),val,ancestors):
+            ancestors.append(node)
+        return ancestors
+
+    def isBST(self,node):
+        left=node.getLeft()
+        right=node.getRight()
+        val=node.getVal()
+        if left!=None and right!=None:
+            return self.isBST(node.getLeft()) and self.isBST(node.getRight())
+        elif left!=None:
+            return left.getVal()<val
+        elif right!=None:
+            return right.getVal()>val
+        else:
+            return True
 
 if __name__=="__main__":
     print("""
@@ -269,3 +342,13 @@ if __name__=="__main__":
     print('-' * 10)
     print(f"Arbres équivalents ? {binarySearchTree.equivalentBST(nodes_s[0],nodes_s[0])}")
     print(f"Arbres équivalents ? {binarySearchTree.equivalentBST(nodes_s[1], nodes_s[2])}")
+
+    print('-' * 10)
+    print("Affichage suivant un parcours largeur avant suppression du 2:")
+    binarySearchTree.widetrack(binarySearchTree.getRoot())
+    binarySearchTree.delete(nodes_s[0], 4)
+    print("Affichage suivant un parcours largeur après suppression du 2:")
+    binarySearchTree.widetrack(binarySearchTree.getRoot())
+
+    print('-' * 10)
+    print(f"L'arbre est un ABR ? {binarySearchTree.isBST(nodes_s[0])}")
